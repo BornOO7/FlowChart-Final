@@ -9,6 +9,7 @@ import ReactFlow, {
 import { NavLink, useHistory } from 'react-router-dom'
 import { adddata } from './context/ContextProvider';
 
+
 import Sidebar from './Sidebar';
 
 import './dndflow.css';
@@ -16,8 +17,11 @@ import './dndflow.css';
 import TextUpdaterNode from './TextUpdaterNode.js';
 import './textupdaternode.css';
 //import Regex from './Regex';
+const crypto = require('crypto')
 
 const regexNodes = []
+const nodeIDS = []
+let count = 2324342
 
 const {deets} = './TextUpdaterNode.js'
 
@@ -33,6 +37,7 @@ const DnDFlow = () => {
  
   const [name, setName] = useState("")
   const [regexVariable, setRegexName] = useState("")
+  const [nodeID, setNodeID] = useState("")
 
   const { udata, setUdata } = useContext(adddata);
 
@@ -209,29 +214,30 @@ const addIPNode = () => {
   }));
 };
 
-const addNode = (item) => {
-  console.log('addnode', regexVariable)
-  console.log('item', item)
+const addNode = (nodeID) => {
+  console.log(regexVariable)
+  let l = new RegExp(regexNodes[0])
+  console.log(l)
+  if (!l.test(regexVariable)) {  
+    alert('RegEx not accepted')
+    return
+}  
 
-  let l = new RegExp(item)
-  
-  console.log('l', l)
-  if(l.test(regexVariable)) {
-      console.log('True')
-  }
-  else {
-    alert('RegExp not matched')
-  }
-
-  // setNodes(e => e.concat({
-  //     id: (e.length+1).toString(),
-  //     data: {label: `${name}`},
-  //     position: {x: Math.random() * window.innerWidth/8, y: Math.random() * window.innerHeight/8}
-  // }));
+setNodes(e => e.concat({
+    id: (e.length+1).toString(),
+    data: {label: `${regexVariable}`},
+    position: {x: Math.random() * window.innerWidth/8, y: Math.random() * window.innerHeight/8}
+}));
 };
 
 const addRegexNode = () => {
-  regexNodes.push(name)
+  regexNodes.push(name) 
+}
+
+const addNodeIDS = (nodeID) => {
+  if (nodeIDS.indexOf(nodeID) === -1) {
+    nodeIDS.push(nodeID)
+  }
 }
 
   
@@ -277,14 +283,6 @@ const addRegexNode = () => {
       </ReactFlowProvider>
       <div class="abc">
         <div class="customs">
-          <input type="text" class="b"
-              onChange={e => setName(e.target.value)} name="title"/>
-              <button class="b" 
-                type="button"
-                onClick={addDeviceNode}
-                >Device Node</button>
-        </div>
-        <div class="customs">
       <input type="text" class="b"
                 onChange={e => setName(e.target.value)}
                 name="title"/>
@@ -313,14 +311,16 @@ const addRegexNode = () => {
         </div>
         <div>
         {regexNodes.map((item) => {
+          count = count+1
           return(
           <div>
           <input type="text" class="b"
               onChange={e => setRegexName(e.target.value)}
               name="title"/>
               <button class="b"
+              id={count}
+              onClick = {addNode}
               type="button"
-              onClick={(item) => {console.log(item.nativeEvent)}}
               >{item} Node</button>
           </div>
           )
